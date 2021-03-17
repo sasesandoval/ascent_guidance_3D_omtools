@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 
 from numpy import linalg
 from openmdao.api import Problem, IndepVarComp, ExecComp, ScipyOptimizer, pyOptSparseDriver
@@ -26,6 +27,9 @@ method_name = 'GaussLegendre2'
 initial_time = 0.
 normalized_times = np.linspace(0., 1., num)
 initial_conditions = {'rx': 1., 'ry': 0., 'rz': 0., 'Vx': 0., 'Vy': 0., 'Vz': 0., 'm': 11414.}
+#initial_conditions = {'rx': 1.005736762859885, 'ry': 0., 'rz': -0.005786478684830, 'Vx': -0.005840861873744, 'Vy': 0., 'Vz': -1.015189000628493, 'm': 15102.376679463554} # Abort Scenario 1
+#initial_conditions = {'rx': 1.005736762859885, 'ry': 0., 'rz': -0.005786478684830, 'Vx': -0.005840861873744, 'Vy': 0., 'Vz': -1.015189000628493, 'm': 15102.376679463554} # Abort Scenario 2
+#initial_conditions = {'rx': 1.005736762859885, 'ry': 0., 'rz': -0.005786478684830, 'Vx': -0.005840861873744, 'Vy': 0., 'Vz': -1.015189000628493, 'm': 15102.376679463554} # Abort Scenario 3
 
 integrator = ODEIntegrator(ode_function, formulation, method_name,
     initial_time=initial_time, normalized_times=normalized_times,
@@ -160,7 +164,7 @@ if 0:
 
 prob.run()
 
-t = []
+t = prob['integrator_group.times']
 rx = prob['integrator_group.state:rx']
 ry = prob['integrator_group.state:ry']
 rz = prob['integrator_group.state:rz']
@@ -171,6 +175,11 @@ ux = prob['integrator_group.dynamic_parameter:ux']
 uy = prob['integrator_group.dynamic_parameter:uy']
 uz = prob['integrator_group.dynamic_parameter:uz']
 m = prob['integrator_group.state:m']
+
+# data = [rx, ry, rz, Vx, Vy, Vz, m, ux, uy, uz, t]
+# print("All data")
+# print(data)
+# pickle.dump(data,open("data_om.dat","wb"))
 
 if 1:
     r = np.zeros(num)
@@ -196,7 +205,7 @@ if 0:
     plt.grid()
     plt.show()
 print(' ')
-if 1:
+if 0:
     u = np.zeros(num)
     for i in range(0,num):
         u[i] = linalg.norm([ux[i],uy[i],uz[i]],2)
@@ -216,7 +225,7 @@ if 0:
     plt.grid()
     plt.show()
 print(' ')
-if 1:
+if 0:
     plt.plot(1034.2*prob['integrator_group.times'], ux)
     plt.xlabel('time')
     plt.ylabel('control x')
@@ -224,7 +233,7 @@ if 1:
     plt.grid()
     plt.show()
 print(' ')
-if 1:
+if 0:
     plt.plot(1034.2*prob['integrator_group.times'], uy)
     plt.xlabel('time')
     plt.ylabel('control y')
@@ -232,7 +241,7 @@ if 1:
     plt.grid()
     plt.show()
 print(' ')
-if 1:
+if 0:
     plt.plot(1034.2*prob['integrator_group.times'], uz)
     plt.xlabel('time')
     plt.ylabel('control z')
@@ -296,3 +305,17 @@ if 1:
 #     ax.set_zlabel('z axis')
 #     plt.ylim(-0.2,0.2)
 #     plt.show()
+
+
+
+# ------------------------------------------------------------------------------
+#                                SAVE DATA
+# ------------------------------------------------------------------------------
+# print("size Check")
+# print(np.shape(r))
+# print(np.shape(V))
+# print(np.shape(m))
+# print(np.shape(u))
+# print(np.shape(t))
+# data = [r, V, u, t]
+# pickle.dump(data,open("data_om.dat","wb"))
